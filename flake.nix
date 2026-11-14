@@ -57,7 +57,7 @@
         };
 
       # Machine de test, pour la CI et pour essayer le socle dans une VM :
-      #   nixos-rebuild build-vm --flake .#vm-test && ./result/bin/run-vm-test-vm
+      #   nix build .#nixosConfigurations.vm-test.config.system.build.vm && ./result/bin/run-vm-test-vm
       # (identifiant : test / mot de passe : test)
       nixosConfigurations.vm-test = self.lib.mkHost {
         hostname = "vm-test";

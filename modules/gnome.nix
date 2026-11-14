@@ -17,6 +17,9 @@ in
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
+  # GNOME installe son propre navigateur (GNOME Web) : un seul navigateur, Firefox.
+  environment.gnome.excludePackages = [ pkgs.epiphany ];
+
   # Active aussi la logithèque GNOME (gnome-software) avec Flatpak.
   # Le dépôt Flathub est ajouté par compte utilisateur (cf. home/default.nix) :
   # chacun peut installer des applis sans mot de passe administrateur.
@@ -29,6 +32,14 @@ in
       settings = {
         "org/gnome/shell" = {
           enabled-extensions = [ "dash-to-dock@micxgx.gmail.com" ];
+          # Applis du dock : celles de GNOME, avec Firefox à la place de GNOME Web.
+          favorite-apps = [
+            "firefox.desktop"
+            "org.gnome.Nautilus.desktop"
+            "org.gnome.Calendar.desktop"
+            "org.gnome.TextEditor.desktop"
+            "org.gnome.Music.desktop"
+          ];
         };
 
         "org/gnome/shell/extensions/dash-to-dock" = {

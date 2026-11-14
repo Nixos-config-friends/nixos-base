@@ -3,7 +3,8 @@
 { lib, pkgs, ... }:
 let
   # --- Web-apps -------------------------------------------------------------
-  # Photoshop, Word et Outlook n'existent pas sous Linux : on ouvre leur
+  # Photoshop, Word, Outlook, WhatsApp et Teams n'ont pas d'appli officielle
+  # sous Linux : on ouvre leur
   # version web dans une fenêtre dédiée (sans barre d'adresse ni onglets),
   # lancée depuis la grille d'applis ou le dock comme une vraie appli.
   # Firefox ne sait pas faire de fenêtre « appli » sous Linux : on utilise
@@ -65,6 +66,23 @@ let
       url = "https://outlook.live.com/mail/";
       icon = mkIcon "outlook" "#0078d4" "#ffffff" "O";
     })
+    (mkWebApp {
+      id = "whatsapp";
+      name = "WhatsApp";
+      # Les notifications n'arrivent que si la fenêtre est ouverte.
+      description = "WhatsApp Web (à relier au téléphone avec le QR code)";
+      url = "https://web.whatsapp.com/";
+      icon = mkIcon "whatsapp" "#25d366" "#ffffff" "W";
+    })
+    (mkWebApp {
+      id = "teams";
+      name = "Teams";
+      # Microsoft a arrêté Teams pour Linux en 2022. Pour une simple réunion,
+      # le lien reçu par e-mail s'ouvre aussi directement dans Firefox.
+      description = "Microsoft Teams en ligne (réunions, discussions)";
+      url = "https://teams.microsoft.com/";
+      icon = mkIcon "teams" "#5059c9" "#ffffff" "T";
+    })
   ];
 in
 {
@@ -79,10 +97,20 @@ in
       libreoffice
       hunspellDicts.fr-any # correcteur orthographique français
       onlyoffice-desktopeditors # suite bureautique à l'interface proche de Word / Excel / PowerPoint
+      pinta
+      vlc # lit toutes les vidéos et tous les DVD, là où le lecteur de GNOME bloque parfois
       cryptomator # coffre-fort chiffré : le mot de passe n'est connu que de son propriétaire
       rustdesk-flutter # partage d'écran à la demande (version avec prise en charge de Wayland)
+      signal-desktop # à relier au téléphone avec le QR code
+      discord # ses mises à jour forcées sont désactivées : elles arrivent avec celles du système
+      bitwarden-desktop # gestionnaire de mots de passe
     ]
     ++ webApps;
+
+  # Discord n'est pas un logiciel libre : on l'autorise par son nom, lui seul.
+  # (Attention : définir aussi allowUnfreePredicate dans un personal.nix
+  #  provoquerait un conflit ; y utiliser plutôt nixpkgs.config.allowUnfree.)
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "discord" ];
 
   # Polices libres aux mêmes dimensions que celles de Microsoft : les documents
   # Word reçus gardent leur mise en page dans LibreOffice et OnlyOffice.

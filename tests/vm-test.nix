@@ -4,7 +4,7 @@
   relatives = {
     user = "test";
     fullName = "Compte de test";
-    flake = "github:VOTRE-COMPTE/nixos-proches";
+    flake = "github:Nixos-config-friends/nixos-base";
     gnome.buttons = "mac";
     # On évalue aussi les modules optionnels, pour que la CI les vérifie.
     hardware.oldMac.enable = true;
@@ -17,6 +17,13 @@
 
   # Mot de passe de test, uniquement pour la VM.
   users.users.test.initialPassword = "test";
+
+  # Taille de la VM (par défaut 1 Go de mémoire : trop peu pour GNOME).
+  virtualisation.vmVariant.virtualisation = {
+    memorySize = 4096; # en Mo
+    cores = 2;
+    diskSize = 8192; # en Mo, pour pouvoir essayer des applis Flatpak
+  };
 
   # Une VM ne doit pas se mettre à jour toute seule.
   system.autoUpgrade.enable = lib.mkForce false;

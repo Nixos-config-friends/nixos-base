@@ -21,6 +21,9 @@ in
 
   networking.networkmanager.enable = true;
 
+  # Mémoire compressée : un vieux portable rame moins avec beaucoup d'onglets ouverts.
+  zramSwap.enable = lib.mkDefault true;
+
   # Imprimantes (y compris détection automatique sur le réseau)
   services.printing.enable = lib.mkDefault true;
   services.avahi = {
