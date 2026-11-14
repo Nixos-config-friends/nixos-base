@@ -1,0 +1,16 @@
+# À chaque modification du socle : vérifier que tout s'évalue
+# (y compris la machine de test avec tous les modules optionnels activés).
+name: Vérification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - name: Évaluer le flake
+        run: nix flake check --print-build-logs

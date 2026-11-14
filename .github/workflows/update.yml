@@ -1,0 +1,49 @@
+# Chaque dimanche : récupérer les correctifs de nixpkgs / Home Manager / nix-flatpak,
+# construire la machine de test, et publier le nouveau flake.lock si tout passe.
+# Les dépôts des proches récupèrent ensuite cette version (leur propre Action).
+name: Mise à jour des dépendances
+
+on:
+  schedule:
+    - cron: "23 3 * * 0" # dimanche 03:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Libérer de la place sur le runner
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      - uses: cachix/install-nix-action@v31
+
+      - name: Mettre à jour flake.lock
+        run: nix flake update
+
+      - name: Y a-t-il du nouveau ?
+        id: diff
+        run: |
+          if git diff --quiet flake.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Vérifier et construire la machine de test
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          nix flake check --print-build-logs
+          nix build --no-link --print-build-logs .#nixosConfigurations.vm-test.config.system.build.toplevel
+
+      - name: Publier
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Mise à jour des dépendances ($(date -I))"
+          git push
