@@ -17,8 +17,13 @@ in
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
 
-  # GNOME installe son propre navigateur (GNOME Web) : un seul navigateur, Firefox.
-  environment.gnome.excludePackages = [ pkgs.epiphany ];
+  # Applis de GNOME en double avec celles du socle (modules/apps.nix) :
+  environment.gnome.excludePackages = with pkgs; [
+    epiphany # GNOME Web : un seul navigateur, Firefox
+    showtime # lecteur vidéo : VLC à la place
+    decibels # lecteur audio : VLC à la place (GNOME Musique reste, pour la bibliothèque)
+    seahorse # « Mots de passe et clés » : Bitwarden à la place
+  ];
 
   # Active aussi la logithèque GNOME (gnome-software) avec Flatpak.
   # Le dépôt Flathub est ajouté par compte utilisateur (cf. home/default.nix) :
